@@ -2,8 +2,11 @@ var http = require('http');
 var url = require('url');
 var queryString = require('querystring');
 var EventEmitter = require('events').EventEmitter;
+var monmodule = require('./monModule');
 
-
+//Test de mon module
+monmodule.direBonjour();
+monmodule.direByeBye();
 
 //Le html de ma page
 var html = '<!DOCTYPE html>'
