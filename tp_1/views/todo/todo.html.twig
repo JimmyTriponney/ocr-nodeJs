@@ -1,0 +1,28 @@
+{% extends '../layout.html.twig' %}
+
+{% block body %}
+
+    <h1>Ma todo liste</h1>
+
+    <ul>
+        {% for item in todo %}
+            <li>
+                <a href="/delete/{{ loop.index0 }}">
+                    <span style="border: 1px red solid; border-radius: 5px; color: red; padding: 5px; font-size: 5px; margin: 0 5px; cursor: pointer;">
+                        X
+                    </span>    
+                    <b>{{ item | upper }}</b>
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <div>
+        <form method="POST" action="/add">
+            <label for="addTodo">
+                Ajouter une tâche : <input type="text" id="addTodo" name="add" autofocus/> <button type="submit">Ajouter</button>
+            </label>
+        </form>
+    </div>
+
+{% endblock %}
