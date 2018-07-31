@@ -3,10 +3,14 @@ var url = require('url');
 var queryString = require('querystring');
 var EventEmitter = require('events').EventEmitter;
 var monmodule = require('./monModule');
+var markdown = require('markdown').markdown;
 
 //Test de mon module
 monmodule.direBonjour();
 monmodule.direByeBye();
+
+//Test de markdown
+console.log( markdown.toHTML('un paragraphe en **markdown** !') );
 
 //Le html de ma page
 var html = '<!DOCTYPE html>'
@@ -19,23 +23,68 @@ var html = '<!DOCTYPE html>'
 
 
 
-//Quelque controller pour gérer les différentes pages
-var index = () => {
-    html += '<p>Ma page d\'accueil.</p>';
+//Déclaration de routes
+var routes = {
+    "/": { controller: "index", codeRes: 200, app: "text/html"},
+    "/test": { controller: "test", codeRes: 200, app: "text/html"},
+    "notFound": { controller: "notFound", codeRes: 404},
+}
+
+
+
+//Quelquse controllers pour gérer les différentes pages
+var index = (get) => {
+    console.log( get );
+    return '<p>Ma page d\'accueil.</p>';
 };
 
 var test = () => {
-    html += '<p>Ceci est une page de test.</p>';
+    return '<p>Ceci est une page de test.</p>';
 };
 
 var notFound = () => {
-    html += '<p>Cette page n\'existe pas.</p>';
+    return '<p>Cette page n\'existe pas.</p>';
 };
 
 
 
 //Creation du serveur
-var server = http.createServer();
+var server = http.createServer((req, res) => {
+
+    //Récupération de l'url
+    var path = url.parse( req.url ).pathname;
+    //Récupération de la ligne de GET
+    var get = url.parse( req.url ).query;//La ligne de get au complet
+    var params = queryString.parse( get );//La ligne de get en tableau
+
+
+    //Tests des paramétres GET
+    if( 'firstname' in params && 'name' in params ){
+        console.log('<p><u>Bonjour '+params.firstname+' '+params.name+' vous êtes sur la page :</u></p>');
+    }
+
+
+    //Gestion des routes
+    if( path in routes ){
+        res.writeHead(
+            parseInt(routes[path]['codeRes']),
+            routes[path]['app']
+        );
+        res.write( eval(routes[path]['controller']+'('+get+')') );
+    }
+    else{
+        res.writeHead(
+            parseInt(routes['notFound']['codeRes']),
+            routes['notFound']['app']
+        );
+        res.write( eval(routes['notFound']['controller']+'()') );        
+    }
+
+
+    //Envoi du retour
+    res.end();
+});
+
 
 //Ecoute du port 8080
 server.listen(8080);
@@ -59,48 +108,7 @@ jeu.emit('gameover', 'Perdu !!!');
 
 //Ecoute des événements
 /* Requête au serveur */
-server.on('request', (req, res) => {
-    //Code de retour, initialement 200
-    var codeRes = 200;
-
-
-    //Récupération de l'url
-    var path = url.parse( req.url ).pathname;
-    //Récupération de la ligne de GET
-    var get = url.parse( req.url ).query;//La ligne de get au complet
-    var params = queryString.parse( get );//La ligne de get en tableau
-
-
-    //Personnalisation du message de la page
-    if( 'firstname' in params && 'name' in params ){
-        html += '<p><u>Bonjour '+params.firstname+' '+params.name+' vous êtes sur la page :</u></p>';
-    }
-
-    //Création du retour en fonction de la page appelé
-    if( '/' == path ){
-        index();
-    }
-    else if( '/test' == path ){
-        test();
-    }
-    else{//Pour les pages non-existantes
-        codeRes = 404;
-        notFound();
-    }
-
-    html += '</body></html>';
-
-    //Création de l'en-tête http
-    res.writeHead(
-        codeRes,
-        {"content-type": "text/html"}
-    );
-
-    res.write(html);
-
-    //Envoi du retour
-    res.end();
-});
+//server.on('request', () => {});
 
 /* Arret du serveur */
 server.on('close', () => {

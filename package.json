@@ -1,0 +1,9 @@
+{
+    "name": "mon-app",
+    "version": "0.1.10",
+    "dependencies": {
+        "express": "^4.16.3",
+        "jquery": "^3.3.1",
+        "markdown": "~0.5.0"
+    }
+}
