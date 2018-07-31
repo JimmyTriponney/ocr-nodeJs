@@ -1,0 +1,61 @@
+{% extends 'layout.html.twig' %}
+
+{% block body %}
+    <style>
+        #chat>div{
+            margin-top: 15px;
+        }
+    </style>
+    <div>
+        <label for="message">
+            <div>Votre message :</div>
+            <div>
+                <textarea name="message" id="message" cols="30" rows="3"></textarea>
+            </div>
+        </label>
+        <button id="send">
+                Envoyer
+        </button>
+    </div>
+    <div id="chat" data-pseudo="<div><i></i> vient de ce connecter !</div>" data-message="<div><span style='background:black; padding: 3px 10px; min-width: 30px; color:white;' class='pseudo'></span><span class='message'></span></div>">
+        
+    </div>
+
+{% endblock %}
+
+{% block script %}
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socket = io.connect('http://localhost:8080');
+
+        var pseudo = prompt('Choississez votre pseudo :');
+
+
+        //Envoi du pseudo au serveur
+        socket.emit('new_pseudo', pseudo);
+        //Ajout des nouveax pseudo
+        socket.on('new_pseudo', pseudo => {
+            var html = $( $('#chat').attr('data-pseudo') );
+            html.find('i').html(pseudo);
+            $('#chat').append(html);
+        });
+
+        //Gestion des nouveaux messages
+        socket.on('new_message', (data) => {
+            showMessage(data.pseudo, data.message);
+        });
+
+        $('#send').on('click', () => {
+            var message = $('#message').val();
+            socket.emit('new_message', message);
+            $('#message').val('');
+        });
+
+        function showMessage(pseudo, message){
+            var html = $( $('#chat').attr('data-message') );
+            html.find('.pseudo').html(pseudo);
+            html.find('.message').html(message);
+            $('#chat').append(html);
+        }
+    </script>
+{% endblock %}
