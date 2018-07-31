@@ -2,8 +2,12 @@
     "name": "mon-app",
     "version": "0.1.10",
     "dependencies": {
+        "ejs": "^2.6.1",
         "express": "^4.16.3",
         "jquery": "^3.3.1",
-        "markdown": "~0.5.0"
+        "markdown": "~0.5.0",
+        "morgan": "^1.9.0",
+        "serve-favicon": "^2.5.0",
+        "twig": "^1.12.0"
     }
 }

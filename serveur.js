@@ -12,15 +12,6 @@ monmodule.direByeBye();
 //Test de markdown
 console.log( markdown.toHTML('un paragraphe en **markdown** !') );
 
-//Le html de ma page
-var html = '<!DOCTYPE html>'
-            +'<html>'
-                +'<head>'
-                    +'<meta charset="UTF-8"/>'
-                    +'<title>Ma page avec nodeJS</title>'
-                +'</head>'
-                +'<body>';
-
 
 
 //Déclaration de routes
